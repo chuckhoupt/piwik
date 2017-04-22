@@ -6415,16 +6415,19 @@ if (typeof window.Piwik !== 'object') {
                 var onError = windowAlias.onerror;
 
                 windowAlias.onerror = function (message, url, linenumber, column, error) {
-                    trackCallback(function () {
-                        var category = 'JavaScript Errors';
+                    // Don't track errors without URLs, since they are uninformative.
+                    if (url) {
+                        trackCallback(function () {
+                           var category = 'JavaScript Errors';
 
-                        var action = url + ':' + linenumber;
-                        if (column) {
-                            action += ':' + column;
-                        }
+                           var action = url + ':' + linenumber;
+                            if (column) {
+                                action += ':' + column;
+                            }
 
-                        logEvent(category, action, message);
-                    });
+                            logEvent(category, action, message);
+                        });
+                    }
 
                     if (onError) {
                         return onError(message, url, linenumber, column, error);
