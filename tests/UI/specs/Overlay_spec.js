@@ -70,10 +70,11 @@ describe("Overlay", function () {
 
     it("should show stats for new links when dropdown opened", function (done) {
         expect.screenshot("page_new_links").to.be.capture(function (page) {
+            page.wait(2000);
             page.evaluate(function() {
                 var iframe = document.getElementById('overlayIframe');
                 var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-                innerDoc.querySelector('.dropdown').click();
+                innerDoc.querySelector('.dropdown-toggle').click();
             });
             page.wait(2000);
 
