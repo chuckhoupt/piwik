@@ -6405,8 +6405,12 @@ if (typeof window.Piwik !== 'object') {
              * tracking as the error tracking won't work otherwise. To capture all JS errors we
              * recommend to include the Piwik JavaScript tracker in the HTML as early as possible.
              * If possible directly in <head></head> before loading any other JavaScript.
+             *
+             * @param boolean [ignoreEmpty=false] Optional, ignore "empty" errors that have no URL defined.
+             *                                    Errors without an URL are uninformative, but are frequently
+             *                                    seen in the wild (possibly from misbehaving extensions, etc).
              */
-            this.enableJSErrorTracking = function () {
+            this.enableJSErrorTracking = function (ignoreEmpty) {
                 if (enableJSErrorTracking) {
                     return;
                 }
@@ -6414,9 +6418,13 @@ if (typeof window.Piwik !== 'object') {
                 enableJSErrorTracking = true;
                 var onError = windowAlias.onerror;
 
+                if (!isDefined(ignoreEmpty)) {
+                    ignoreEmpty = false;
+                }
+
                 windowAlias.onerror = function (message, url, linenumber, column, error) {
-                    // Don't track errors without URLs, since they are uninformative.
-                    if (url) {
+                    // With ignore flag, don't track errors without URLs.
+                    if (url || !ignoreEmpty) {
                         trackCallback(function () {
                            var category = 'JavaScript Errors';
 
